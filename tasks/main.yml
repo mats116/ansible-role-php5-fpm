@@ -1,0 +1,37 @@
+- name: modify repository php5.6
+  apt_repository:
+    repo: 'ppa:ondrej/php5-5.6'
+    state: present
+
+- name: install
+  apt:
+    name: "php5-fpm={{ version }}*"
+    state: present
+    force: yes
+  notify: restart php5-fpm
+
+- name: modify config
+  template:
+    src: "{{ item }}"
+    dest: "/etc/php5/fpm/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - php-fpm.conf
+    - php.ini
+  notify: restart php5-fpm
+
+- name: php5-fpm is enabled
+  service:
+    name: php5-fpm
+    state: started
+    enabled: yes
+
+- name: modify logrotate conf
+  template:
+    src: logrotate
+    dest: /etc/logrotate.d/php5-fpm
+    owner: root
+    group: root
+    mode: 0644
