@@ -6,9 +6,14 @@
 
 - name: install php5-fpm
   apt:
-    name: "php5-fpm={{ php_version }}*"
+    name: "{{ item }}={{ php_version }}*"
     state: present
     force: yes
+  with_items:
+    - "php5-fpm"
+    - "php5-gd"
+    - "php5-mysql"
+    - "php5-pgsql"
   notify: restart php5-fpm
 
 - name: modify config
